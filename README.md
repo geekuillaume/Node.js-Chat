@@ -15,6 +15,11 @@ To use it, you need Node.js and those 3 modules.
 
 	- You can change the app port from the server.js third line.
 
+## How to use :
+
+	- node server.js
+	- Go to IP:port from any (recent) navigator to start chatting !
+
 ### Credits
 
 Creator : [Geekuillaume] (http://geekuillau.me/)
