@@ -1,12 +1,17 @@
 //	Customization
 
-var appPort = 16558; 
+var appPort = 16558;
 
 // Librairies
 
-var express = require('express'), app = express.createServer();
+var express = require('express'), app = express();
+var http = require('http')
+  , server = http.createServer(app)
+  , io = require('socket.io').listen(server);
+
+
 var jade = require('jade');
-var io = require('socket.io').listen(app);
+// var io = require('socket.io').listen(app);
 var pseudoArray = ['admin']; //block the admin username (you can disable it)
 
 // Views Options
@@ -24,7 +29,8 @@ app.configure(function() {
 app.get('/', function(req, res){
   res.render('home.jade');
 });
-app.listen(appPort);
+server.listen(appPort);
+// app.listen(appPort);
 console.log("Server listening on port 16558");
 
 // Handle the socket.io connections
@@ -62,7 +68,7 @@ io.sockets.on('connection', function (socket) { // First connection
 		if (pseudoSet(socket))
 		{
 			var pseudo;
-			socket.get('pseudo', function(err, name) { 
+			socket.get('pseudo', function(err, name) {
 				pseudo = name;
 			});
 			var index = pseudoArray.indexOf(pseudo);
@@ -76,7 +82,7 @@ function reloadUsers() { // Send the count of the users to all
 }
 function pseudoSet(socket) { // Test if the user has a name
 	var test;
-	socket.get('pseudo', function(err, name) { 
+	socket.get('pseudo', function(err, name) {
 		if (name == null ) test = false;
 		else test = true;
 	});
@@ -84,7 +90,7 @@ function pseudoSet(socket) { // Test if the user has a name
 }
 function returnPseudo(socket) { // Return the name of the user
 	var pseudo;
-	socket.get('pseudo', function(err, name) { 
+	socket.get('pseudo', function(err, name) {
 		if (name == null ) pseudo = false;
 		else pseudo = name;
 	});
