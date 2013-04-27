@@ -70,6 +70,7 @@ function sentMessage() {
 function addMessage(msg, pseudo, date, self) {
 	if(self) var classDiv = "row message self";
 	else var classDiv = "row message";
+	msg.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot");
 	$("#chatEntries").append('<div class="'+classDiv+'"><p class="infos"><span class="pseudo">'+pseudo+'</span>, <time class="date" title="'+date+'">'+date+'</time></p><p>' + msg + '</p></div>');
 	time();
 }
