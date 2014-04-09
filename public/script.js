@@ -35,6 +35,8 @@ $(function() {
 	$("#chatEntries").slimScroll({height: '600px'});
 	submitButton.click(function() {sentMessage();});
 	setHeight();
+	$('#messageInput').keypress(function (e) {
+	if (e.which == 13) {sentMessage();}});
 });
 
 //Socket.io
