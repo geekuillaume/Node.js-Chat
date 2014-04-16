@@ -70,9 +70,12 @@ function sentMessage() {
 	}
 }
 function addMessage(msg, pseudo, date, self) {
+	addMessage.nbMessages = (addMessage.nbMessages + 1) || 1;
+	
 	if(self) var classDiv = "row message self";
 	else var classDiv = "row message";
-	$("#chatEntries").append('<div class="'+classDiv+'"><p class="infos"><span class="pseudo">'+pseudo+'</span>, <time class="date" title="'+date+'">'+date+'</time></p><p>' + msg + '</p></div>');
+	$("#chatEntries").append('<div class="'+classDiv+'"><p class="infos"><span class="pseudo">'+pseudo+'</span>, <time class="date" title="'+date+'">'+date+'</time></p><p id="message-' + addMessage.nbMessages + '"></p></div>');
+	$("#message-" + addMessage.nbMessages).text(msg);
 	time();
 }
 
