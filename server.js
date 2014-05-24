@@ -1,6 +1,10 @@
 //	Customization
 
 var appPort = 16558;
+var numRounds = 10; //number of rounds
+var minPlayers = 3; //min number of players
+var roundInterval = 60; // interval in seconds for entry events
+var voteInterval = 10; //interval in seconds for vote events
 
 // Librairies
 
@@ -36,16 +40,57 @@ console.log("Server listening on port 16558");
 var users = 0; //count the users
 
 io.sockets.on('connection', function (socket) { // First connection
+	var handler = {	 //encapsulates game logic
+		started : false,
+		submitPhase : false,
+		roundsLeft : numRounds,
+		currentRound : 0 ,
+		players : [],
+		start : function(userList){
+			started = true;
+			this.say("Game has started with "+userList.length+" players");
+			currentRound = 1;
+			for (var i=0; i < userList.length; i++){
+				players[i] = [userList[i], 0]; //builds list and sets scores to 0
+			}
+		},
+		say : function(str){
+			var transmit = { date: new Date().toISOString(), pseudo: "Funbot", message: str};
+		    socket.emit('message', transmit);       //command shown back to user
+			socket.broadcast.emit('message', transmit);
+		},
+		consumeMessage: function(username, command, argument){
+			switch(command){
+				case "start":
+					this.start();
+					break;
+				case "say":
+					this.say(argument);
+					break;
+				case "help":
+					this.say(username+" needs help!!!");
+					break;
+			}
+		}
+	}
 	users += 1; // Add 1 to the count
 	reloadUsers(); // Send the count to all the users
 	socket.on('message', function (data) { // Broadcast the message to all
 		if(pseudoSet(socket))
 		{
-			var transmit = {date : new Date().toISOString(), pseudo : returnPseudo(socket), message : data};
-			socket.broadcast.emit('message', transmit);
-			console.log("user "+ transmit['pseudo'] +" said \""+data+"\"");
+			if (data.charAt(0) == '/') { //if the message is a command...
+				var split = data.split(" ");
+				var command = split[0].substring(1);
+				handler.consumeMessage(returnPseudo(socket),command,"argument"); //send it to the handler
+			}
+			else{ //message isn't a command so send it normally
+				var transmit = {date : new Date().toISOString(), pseudo : returnPseudo(socket), message : data};
+				socket.broadcast.emit('message', transmit);
+				console.log("user " + transmit['pseudo'] + " said \"" + data + "\"");
+			}
 		}
-	});
+		}
+	);
 	socket.on('setPseudo', function (data) { // Assign a name to the user
 		if (pseudoArray.indexOf(data) == -1) // Test if the name is already taken
 		{
