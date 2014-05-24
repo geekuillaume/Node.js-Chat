@@ -79,9 +79,9 @@ io.sockets.on('connection', function (socket) { // First connection
 		if(pseudoSet(socket))
 		{
 			if (data.charAt(0) == '/') { //if the message is a command...
-				var split = data.split(" ");
-				var command = split[0].substring(1);
-				handler.consumeMessage(returnPseudo(socket),command,"argument"); //send it to the handler
+				var command = data.split(" ")[0].substring(1);
+				var argument = data.substring(string.indexOf('_')+1)
+				handler.consumeMessage(returnPseudo(socket),command,argument); //send it to the handler
 			}
 			else{ //message isn't a command so send it normally
 				var transmit = {date : new Date().toISOString(), pseudo : returnPseudo(socket), message : data};
