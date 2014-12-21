@@ -4,7 +4,7 @@
   "author":"geekuillaume",
   "dependencies": {
   	"socket.io": "*",
-  	"express": "*",
+  	"express": "~3",
   	"jade": "*"
   	  },
   "scripts": {
