@@ -9,7 +9,9 @@ To use it, you need Node.js and those 3 modules.
 ## Install the three modules :
 
 	- Go to the chat directory and use this command
-	- npm install express socket.io jade
+	- npm install express@4.12.0
+	- npm install socket.io@1.3.4
+	- npm install jade@1.9.2
 
 ## Customize the installation :
 
