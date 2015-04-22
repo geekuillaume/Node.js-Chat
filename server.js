@@ -18,11 +18,9 @@ var pseudoArray = ['admin']; //block the admin username (you can disable it)
 
 app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
-app.set("view options", { layout: false })
+app.set("view options", { layout: false });
 
-app.configure(function() {
-	app.use(express.static(__dirname + '/public'));
-});
+app.use(express.static(__dirname + '/public'));
 
 // Render and send the main page
 
@@ -31,7 +29,7 @@ app.get('/', function(req, res){
 });
 server.listen(appPort);
 // app.listen(appPort);
-console.log("Server listening on port 16558");
+console.log("Server listening on port " + appPort);
 
 // Handle the socket.io connections
 
@@ -43,7 +41,7 @@ io.sockets.on('connection', function (socket) { // First connection
 	socket.on('message', function (data) { // Broadcast the message to all
 		if(pseudoSet(socket))
 		{
-			var transmit = {date : new Date().toISOString(), pseudo : returnPseudo(socket), message : data};
+			var transmit = {date : new Date().toISOString(), pseudo : socket.nickname, message : data};
 			socket.broadcast.emit('message', transmit);
 			console.log("user "+ transmit['pseudo'] +" said \""+data+"\"");
 		}
@@ -51,11 +49,10 @@ io.sockets.on('connection', function (socket) { // First connection
 	socket.on('setPseudo', function (data) { // Assign a name to the user
 		if (pseudoArray.indexOf(data) == -1) // Test if the name is already taken
 		{
-			socket.set('pseudo', data, function(){
-				pseudoArray.push(data);
-				socket.emit('pseudoStatus', 'ok');
-				console.log("user " + data + " connected");
-			});
+			pseudoArray.push(data);
+			socket.nickname = data;
+			socket.emit('pseudoStatus', 'ok');
+			console.log("user " + data + " connected");
 		}
 		else
 		{
@@ -67,10 +64,9 @@ io.sockets.on('connection', function (socket) { // First connection
 		reloadUsers();
 		if (pseudoSet(socket))
 		{
+			console.log("disconnect...");
 			var pseudo;
-			socket.get('pseudo', function(err, name) {
-				pseudo = name;
-			});
+			pseudo = socket.nickname;
 			var index = pseudoArray.indexOf(pseudo);
 			pseudo.slice(index - 1, 1);
 		}
@@ -82,17 +78,7 @@ function reloadUsers() { // Send the count of the users to all
 }
 function pseudoSet(socket) { // Test if the user has a name
 	var test;
-	socket.get('pseudo', function(err, name) {
-		if (name == null ) test = false;
-		else test = true;
-	});
+	if (socket.nickname == null ) test = false;
+	else test = true;
 	return test;
-}
-function returnPseudo(socket) { // Return the name of the user
-	var pseudo;
-	socket.get('pseudo', function(err, name) {
-		if (name == null ) pseudo = false;
-		else pseudo = name;
-	});
-	return pseudo;
 }
