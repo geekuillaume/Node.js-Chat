@@ -68,7 +68,11 @@ io.sockets.on('connection', function (socket) { // First connection
 			var pseudo;
 			pseudo = socket.nickname;
 			var index = pseudoArray.indexOf(pseudo);
-			pseudo.slice(index - 1, 1);
+			// if nickname found
+			if (index>-1)
+			{
+				pseudo.splice(index, 1);
+			}
 		}
 	});
 });
