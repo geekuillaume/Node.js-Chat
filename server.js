@@ -7,7 +7,9 @@ var appPort = 16558;
 var express = require('express'), app = express();
 var http = require('http')
   , server = http.createServer(app)
-  , io = require('socket.io').listen(server);
+  , io = require('socket.io').listen(server)
+  , escape = require('escape-html')
+
 
 
 var jade = require('jade');
@@ -41,7 +43,7 @@ io.sockets.on('connection', function (socket) { // First connection
 	socket.on('message', function (data) { // Broadcast the message to all
 		if(pseudoSet(socket))
 		{
-			var transmit = {date : new Date().toISOString(), pseudo : socket.nickname, message : data};
+			var transmit = {date : new Date().toISOString(), pseudo : socket.nickname, message : escape(data)};
 			socket.broadcast.emit('message', transmit);
 			console.log("user "+ transmit['pseudo'] +" said \""+data+"\"");
 		}
